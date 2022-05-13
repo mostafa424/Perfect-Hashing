@@ -1,13 +1,11 @@
 package com.company;
 
-import java.util.List;
-
 public class MatrixHasher implements Hasher{
-    private final int tableSizeExponent;
-    private final int keyBitsNum;
+    private final byte tableSizeExponent;
+    private final byte keyBitsNum;
     private byte[][] hashMatrix;
 
-    public MatrixHasher(int tableSizeExponent, int keyBitsNum) {
+    public MatrixHasher(byte tableSizeExponent, byte keyBitsNum) {
         this.tableSizeExponent = tableSizeExponent;
         this.keyBitsNum = keyBitsNum;
     }
@@ -19,7 +17,7 @@ public class MatrixHasher implements Hasher{
      * @param num <code>long</code> to convert to bit vector of length equal to bits number provided.
      * @return <code>byte[]</code> representing the bit vector.
      */
-    private byte[] convertToBits(long num){
+    private byte[] convertToBits(int num){
         byte[] res = new byte[keyBitsNum];
         int i = 0;
         while(num != 0 && i < this.keyBitsNum){
@@ -52,10 +50,10 @@ public class MatrixHasher implements Hasher{
      * @param bitVector bit vector represented as <code>byte[]</code>
      * @return decimal <code>long</code> equivalent of provided bit vector.
      **/
-    private long vectorToDecimal(byte[] bitVector){
-        long res = 0;
+    private int vectorToDecimal(byte[] bitVector){
+        int res = 0;
         for(int i = 0; i < tableSizeExponent; i++){
-            res += (long) bitVector[i] * (1L << i);
+            res += bitVector[i] * (1 << i);
         }
         return res;
     }
@@ -70,7 +68,7 @@ public class MatrixHasher implements Hasher{
     }
 
     @Override
-    public long hash(long key) {
+    public int hash(int key) {
         return vectorToDecimal(computeHashVector(convertToBits(key)));
     }
 }
