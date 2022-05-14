@@ -4,62 +4,63 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MultilevelStaticTable<V> {
-    private final StaticTable<V>[] tables;
-    private final byte keyBitsNum;
-    private byte firstLevelRehashes;
+    private final List<NSquarePerfectHasher<V>> tables;
+    private final int keyBitsNum;
+    private int firstLevelRehashes;
     private final Hasher hashEngine;
 
-    public MultilevelStaticTable(long tableSize, byte keyBitsNum, int[] keys, V[] values) {
-        this.tables = new StaticTable<V>[1<<(int)Math.ceil(Math.log(tableSize))];
+    public MultilevelStaticTable(int keyBitsNum, List<Integer> keys, List<V> values) {
+        this.tables = new ArrayList<>(1<<(int)Math.ceil(Math.log(keys.size())/Math.log(2)));
         this.keyBitsNum = keyBitsNum;
-        this.hashEngine = new MatrixHasher((byte) Math.log(tables.length), keyBitsNum);
+        this.hashEngine = new MatrixHasher((int)Math.ceil(Math.log(keys.size())/Math.log(2)), keyBitsNum);
         this.insertAll(keys, values);
     }
 
-    private void insertAll(int[] keys, V[] values) {
-        int[] hashes = new int[keys.length];
-        byte[] hashCount = new byte[keys.length];
+    private void insertAll(List<Integer> keys, List<V> values) {
+        int[] hashes = new int[keys.size()];
+        int[] hashCount = new int[keys.size()];
         this.hashEngine.generateFunction();
-        for(int i = 0; i < keys.length; i++) {
-            hashes[i] = this.hashEngine.hash(keys[i]);
+        for(int i = 0; i < keys.size(); i++) {
+            hashes[i] = this.hashEngine.hash(keys.get(i));
             hashCount[hashes[i]]++;
         }
         int factorSum = 0;
-        for(int i = 0; i < keys.length; i++) {
-            factorSum += hashCount[i] * hashCount[i];
+        for(int i = 0; i < keys.size(); i++) {
+            if(hashCount[i] == 0) continue;
+            int size = 1<<(int)Math.ceil(Math.log(hashCount[i])/Math.log(2));
+            factorSum += size * size;
         }
-        if(factorSum >= 4 * keys.length) {
+        if(factorSum >= 4 * keys.size()) {
             this.firstLevelRehashes++;
             insertAll(keys, values);
         } else {
             List<List<Integer>> partitionedKeys = new ArrayList<>();
             List<List<V>> partitionedValues = new ArrayList<>();
-            for(int i = 0; i < keys.length; i++) {
+            for(int i = 0; i < keys.size(); i++) {
                 partitionedKeys.add(new ArrayList<>());
                 partitionedValues.add(new ArrayList<>());
             }
-            for(int i = 0; i < keys.length; i++) {
-                partitionedKeys.get(hashes[i]).add(keys[i]);
-                partitionedValues.get(hashes[i]).add(values[i]);
+            for(int i = 0; i < keys.size(); i++) {
+                partitionedKeys.get(hashes[i]).add(keys.get(i));
+                partitionedValues.get(hashes[i]).add(values.get(i));
             }
-            for(int i = 0; i < keys.length; i++) {
-                this.tables[i] = new StaticTable<V>(hashCount[i],
-                        this.keyBitsNum,
-                        partitionedKeys.get(i).toArray(),
-                        partitionedValues.get(i).toArray());
+            for(int i = 0; i < keys.size(); i++) {
+                this.tables.add(new NSquarePerfectHasher<V>(this.keyBitsNum,
+                        partitionedKeys.get(i),
+                        partitionedValues.get(i)));
             }
         }
     }
 
     public V get(int key) {
-        return this.tables[this.hashEngine.hash(key)].get(key);
+        return this.tables.get(this.hashEngine.hash(key)).get(key);
     }
 
     public void update(int key, V val) {
-        this.tables[this.hashEngine.hash(key)].update(key, val);
+        this.tables.get(this.hashEngine.hash(key)).update(key, val);
     }
 
-    public byte getRehashesNum() {
+    public int getRehashesNum() {
         return this.firstLevelRehashes;
     }
 }

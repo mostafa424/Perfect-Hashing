@@ -1,14 +1,16 @@
 package com.company;
 
+import java.util.Random;
+
 public class MatrixHasher implements Hasher{
-    private final byte tableSizeExponent;
-    private final byte keyBitsNum;
+    private final int tableSizeExponent;
+    private final int keyBitsNum;
     private byte[][] hashMatrix;
 
-    public MatrixHasher(byte tableSizeExponent, byte keyBitsNum) {
+    public MatrixHasher(int tableSizeExponent, int keyBitsNum) {
         this.tableSizeExponent = tableSizeExponent;
         this.keyBitsNum = keyBitsNum;
-        generateFunction();
+        this.hashMatrix = new byte[tableSizeExponent][keyBitsNum];
     }
 
 
@@ -20,6 +22,10 @@ public class MatrixHasher implements Hasher{
      */
     private byte[] convertToBits(int num){
         byte[] res = new byte[keyBitsNum];
+        if(num < 0) {
+            num += 1<<(keyBitsNum-1);
+            res[keyBitsNum - 1] = 1;
+        }
         int i = 0;
         while(num != 0 && i < this.keyBitsNum){
             res[i++] = (byte) (num % 2);
@@ -63,7 +69,7 @@ public class MatrixHasher implements Hasher{
     public void generateFunction() {
         for(int i = 0; i < tableSizeExponent; i++){
             for(int j = 0; j < keyBitsNum; j++){
-                hashMatrix[i][j] = (byte) Math.round(Math.random());
+                hashMatrix[i][j] = (byte) new Random().nextInt(2);
             }
         }
     }
