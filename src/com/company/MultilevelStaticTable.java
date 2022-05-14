@@ -51,7 +51,7 @@ public class MultilevelStaticTable<V> {
             this.firstLevelRehashes++;
             insertAll(keys, values);
         } else {
-            this.numOfCells = factorSum + this.size;
+            this.numOfCells = factorSum;
             List<List<Integer>> partitionedKeys = new ArrayList<>();
             List<List<V>> partitionedValues = new ArrayList<>();
             for(int i = 0; i < this.size; i++) {
@@ -90,7 +90,11 @@ public class MultilevelStaticTable<V> {
         return res;
     }
 
-    public int getNumOfCells() {
+    public int getFirstLevelCells() {
+        return this.size;
+    }
+
+    public int getSecondLevelCells() {
         return this.numOfCells;
     }
 }
