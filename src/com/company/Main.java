@@ -26,7 +26,7 @@ public class Main {
                 NSquarePerfectHasher<Integer> test = new NSquarePerfectHasher<>(32, testKeys, testValues);
                 while (true) {
                     System.out.println("Select the operation you want to perform by pressing the respective number: ");
-                    System.out.println("1:get collisions");
+                    System.out.println("1:get rehashes");
                     System.out.println("2:get number of cells");
                     System.out.println("3:exit");
                     int option = sc.nextInt();
@@ -54,8 +54,8 @@ public class Main {
                 MultilevelStaticTable<Integer> test2 = new MultilevelStaticTable<>(32, testKeys2, testValues2);
                 while (true) {
                     System.out.println("Select the operation you want to perform by pressing the respective number: ");
-                    System.out.println("1:get collisions in first level");
-                    System.out.println("2:get collisions in second level");
+                    System.out.println("1:get rehashes in first level");
+                    System.out.println("2:get rehashes in second level");
                     System.out.println("3:get number of cells");
                     System.out.println("4:exit");
                     int option = sc.nextInt();
