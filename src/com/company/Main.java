@@ -56,15 +56,17 @@ public class Main {
                     System.out.println("Select the operation you want to perform by pressing the respective number: ");
                     System.out.println("1:get rehashes in first level");
                     System.out.println("2:get rehashes in second level");
-                    System.out.println("3:get number of cells");
-                    System.out.println("4:exit");
+                    System.out.println("3:get number of first level cells");
+                    System.out.println("4:get number of second level cells");
+                    System.out.println("5:exit");
                     int option = sc.nextInt();
                     switch (option) {
                         case 1 -> System.out.println(test2.getRehashesNum());
                         case 2 -> System.out.println(test2.getInnerRehashesNum());
-                        case 3 -> System.out.println(test2.getNumOfCells());
+                        case 3 -> System.out.println(test2.getFirstLevelCells());
+                        case 4 -> System.out.println(test2.getSecondLevelCells());
                     }
-                    if (option == 4) {
+                    if (option == 5) {
                         System.out.println("Exiting....");
                         break;
                     }
