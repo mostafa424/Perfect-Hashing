@@ -8,6 +8,7 @@ public class MatrixHasher implements Hasher{
     public MatrixHasher(byte tableSizeExponent, byte keyBitsNum) {
         this.tableSizeExponent = tableSizeExponent;
         this.keyBitsNum = keyBitsNum;
+        generateFunction();
     }
 
 
