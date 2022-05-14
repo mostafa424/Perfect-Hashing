@@ -17,7 +17,7 @@ public class MatrixHasher implements Hasher{
     /**
      * Method to convert a number to a bit vector.
      *
-     * @param num <code>long</code> to convert to bit vector of length equal to bits number provided.
+     * @param num <code>int</code> to convert to bit vector of length equal to bits number provided.
      * @return <code>byte[]</code> representing the bit vector.
      */
     private byte[] convertToBits(int num){
@@ -52,10 +52,10 @@ public class MatrixHasher implements Hasher{
     }
 
     /**
-     * used to convert a bit vector to decimal <code>long</code>.
+     * used to convert a bit vector to decimal <code>int</code>.
      *
      * @param bitVector bit vector represented as <code>byte[]</code>
-     * @return decimal <code>long</code> equivalent of provided bit vector.
+     * @return decimal <code>int</code> equivalent of provided bit vector.
      **/
     private int vectorToDecimal(byte[] bitVector){
         int res = 0;
@@ -65,6 +65,9 @@ public class MatrixHasher implements Hasher{
         return res;
     }
 
+    /**
+     * Method to generate the hash function from a universal hash family.
+     */
     @Override
     public void generateFunction() {
         for(int i = 0; i < tableSizeExponent; i++){
@@ -74,6 +77,12 @@ public class MatrixHasher implements Hasher{
         }
     }
 
+    /**
+     * Method to hash an <code>int</code> key.
+     *
+     * @param key <code>int</code> key to hash.
+     * @return hashed value of provided key.
+     */
     @Override
     public int hash(int key) {
         return vectorToDecimal(computeHashVector(convertToBits(key)));
