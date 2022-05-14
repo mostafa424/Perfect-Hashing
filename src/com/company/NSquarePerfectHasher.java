@@ -13,18 +13,32 @@ public class NSquarePerfectHasher<T> {
     private ArrayList<T> table;
     private Hasher hashEngine;
     private int collisionRate;
+    private int size;
 
     /**
      * Constructor
      */
     public NSquarePerfectHasher(int keyBitsNum, List<Integer> keys, List<T> values) {
-        int size;
+        filterDuplicates(keys, values);
         if(values.size() != 0) size = 1<<(int)Math.ceil(Math.log(values.size())/Math.log(2));
         else return;
         this.table = new ArrayList<>(size * size);
         this.hashEngine = new MatrixHasher((int)(2*Math.log(size)/Math.log(2)), keyBitsNum);
         initTable(size * size);
         perfectHash(keys, values);
+    }
+
+    private void filterDuplicates(List<Integer> keys, List<T> values) {
+        for(int i = 0; i < keys.size(); i++) {
+            for(int j = i+1; j < keys.size(); j++) {
+                if(keys.get(i).equals(keys.get(j))) {
+                    values.set(i, values.get(j));
+                    keys.remove(j);
+                    values.remove(j);
+                    j--;
+                }
+            }
+        }
     }
 
     /**
@@ -95,5 +109,9 @@ public class NSquarePerfectHasher<T> {
 
     public void update(int key, T val) {
         this.table.set(this.hashEngine.hash(key), val);
+    }
+
+    public int getNumOfCells() {
+        return this.size;
     }
 }
